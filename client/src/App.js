@@ -5,7 +5,7 @@ import Footer from './components/Footer';
 import Home from './pages/Home';
 import { ApolloProvider, ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-//import Login from './pages/Login';
+import Login from './pages/Login';
 import NoMatch from './pages/NoMatch';
 //import SingleThought from './pages/SingleThought';
 //import Profile from './pages/Profile';
@@ -42,6 +42,10 @@ function App() {
             <Route
                 path="/"
                 element={<Home />}
+              />
+              <Route 
+                path="/login" 
+                element={<Login />} 
               />
               
               <Route
