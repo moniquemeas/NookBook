@@ -46,7 +46,7 @@ type Query {
     user(username: String!): User
     comments(username: String): [Comment]
     comment(_id: ID!): Comment
-    recipes(amount: Int): [Recipe]
+    recipes(username: String): [Recipe]
     recipe(_id: ID!): Recipe
   }
 

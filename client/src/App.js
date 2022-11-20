@@ -7,9 +7,10 @@ import { ApolloProvider, ApolloClient, InMemoryCache, createHttpLink } from '@ap
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './pages/Login';
 import NoMatch from './pages/NoMatch';
-//import SingleThought from './pages/SingleThought';
+
 //import Profile from './pages/Profile';
 import Signup from './pages/Signup';
+import Search  from './pages/Search';
 import { setContext } from '@apollo/client/link/context';
 
 const httpLink = createHttpLink({
@@ -51,6 +52,10 @@ function App() {
               <Route
                 path="/signup"
                 element={<Signup />}
+              />
+              <Route
+                path="/search"
+                element={<Search />}
               />
               
               
