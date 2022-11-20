@@ -1,4 +1,4 @@
-const { User, Comments} = require('../models');
+const { User, Comments, Recipe} = require('../models');
 const { AuthenticationError } = require('apollo-server-express');
 const { signToken } = require('../utils/auth');
 
@@ -18,10 +18,14 @@ const resolvers = {
     users: async () => {
         return User.find()
           .select('-__v -password')
+          .populate('recipes')
+          .populate('comments')
     },
       user: async (parent, { username }) => {
         return User.findOne({ username })
           .select('-__v -password')
+          .populate('comments')
+          .populate('recipes')
 
     },
     comments: async (parent, {username}) => {
@@ -30,7 +34,15 @@ const resolvers = {
     },
     comment: async (parent, {_id}) => {
       return Comments.findOne({_id});
+    },
+    recipes: async (parent, {username, amount}) => {
+      const params = username ? {username} : {};
+      return Recipe.find(params).sort({createdAt: -1}).limit(amount)
+    },
+    recipe: async (parent, {_id}) => {
+      return Recipe.findOne({_id});
     }
+  
       
    },
     Mutation: {
@@ -94,19 +106,33 @@ deleteUser: async(parent, {id}) => {
       return wasDeleted
     },
     
-    addFriend: async (parent, { friendId }, context) => {
+    addRecipe: async (parent, args, context) => {
       if (context.user) {
-        const updatedUser = await User.findOneAndUpdate(
-          { _id: context.user._id },
-          { $addToSet: { friends: friendId } },
-          { new: true }
-        ).populate('friends');
-    
-        return updatedUser;
+        const recipe = await Recipe.create({...args, username: context.user.username})
+        await User.findByIdAndUpdate(
+          { _id: context.user._id},
+          {$addToSet: {recipes: args.input}},
+          {new: true}
+          );
+          return recipe;
       }
-    
-      throw new AuthenticationError('You need to be logged in!');
-    }
+    },
+    editRecipe: async (parent, {id, input: {name, ingredient, cuisine, instruction, calories}}) => {
+      const recipe = await Recipe.findByIdAndUpdate(
+        {_id:id}, 
+        {name:name},
+        {ingredient: ingredient},
+        {cuisine: cuisine},
+        {instruction},
+        {calories: calories},
+        {new: true}
+      );
+      return recipe
+    },
+    deleteRecipe: async(parent, {id}) => {
+      const wasDeleted = (await Recipe.deleteOne({_id: id})).deletedCount;
+      return wasDeleted
+    },
   }
 }
   
